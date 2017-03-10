@@ -276,8 +276,8 @@ static SCPinAppearance *appearance;
 }
 
 -(void)correctPin {
-    if ([self.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetСorrectPin:)]) {
-        [self.validateDelegate pinViewControllerDidSetСorrectPin:self];
+    if ([self.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetСorrectPin: withTouch:)]) {
+        [self.validateDelegate pinViewControllerDidSetСorrectPin:self withTouch:false];
     }
 }
 
@@ -291,8 +291,8 @@ static SCPinAppearance *appearance;
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
         CAAnimation * shake = [self makeShakeAnimation];
         [strongSelf.viewForPins.layer addAnimation:shake forKey:@"shake"];
-        if ([strongSelf.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetWrongPin:)]) {
-            [strongSelf.validateDelegate pinViewControllerDidSetWrongPin:strongSelf];
+        if ([strongSelf.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetWrongPin: withTouch:)]) {
+            [strongSelf.validateDelegate pinViewControllerDidSetWrongPin: strongSelf withTouch:false];
         }
         [strongSelf clearCurrentPin];
         [strongSelf createPinView];
@@ -322,16 +322,29 @@ static SCPinAppearance *appearance;
                           reply:^(BOOL success, NSError * authenticationError) {
                               if (success) {
                                   __strong SCPinViewController *strongSelf = weakSelf;
-
+                                  
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       strongSelf.touchIDPassedValidation = YES;
                                       [strongSelf createPinView];
-                                      if ([strongSelf.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetСorrectPin:)]) {
-                                          [strongSelf.validateDelegate pinViewControllerDidSetСorrectPin:strongSelf];
+                                      if ([strongSelf.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetСorrectPin:withTouch:)]) {
+                                          [strongSelf.validateDelegate pinViewControllerDidSetСorrectPin: strongSelf withTouch:true];
+                                          
                                       }
                                   });
                               } else {
                                   NSLog(@"Authentication Error: %@", authenticationError);
+                                  
+                                  __strong SCPinViewController *strongSelf = weakSelf;
+                                  
+                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                      [strongSelf createPinView];
+                                      if ([strongSelf.validateDelegate respondsToSelector:@selector(pinViewControllerDidSetWrongPin:withTouch:)]) {
+                                          [strongSelf.validateDelegate pinViewControllerDidSetWrongPin: strongSelf withTouch:true];
+                                          
+                                      }
+                                  });
+                                  
+                                  
                               }
                           }];
     } else {

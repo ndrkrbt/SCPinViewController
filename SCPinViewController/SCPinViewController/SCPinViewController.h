@@ -37,13 +37,12 @@ typedef NS_ENUM(NSInteger, SCPinViewControllerScope) {
 /**
  *  when user set wrong pin code calling this delegate method
  */
--(void)pinViewControllerDidSetWrongPin:(SCPinViewController *)pinViewController;
+-(void)pinViewControllerDidSetWrongPin:(SCPinViewController *)pinViewController withTouch:(bool)isTouch;
 /**
  *  when user set correct pin code calling this delegate method
  */
--(void)pinViewControllerDidSetСorrectPin:(SCPinViewController *)pinViewController;
+-(void)pinViewControllerDidSetСorrectPin:(SCPinViewController *)pinViewController withTouch: (bool)isTouch;
 @end
-
 @protocol SCPinViewControllerCreateDelegate <NSObject>
 @required
 /**
